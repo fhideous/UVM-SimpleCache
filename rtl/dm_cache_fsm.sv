@@ -11,7 +11,6 @@ module dm_cache_fsm(
     output cpu_result_type  cpu_res //cache result (cache->CPU)
  );
 
-/*write clock*/
 typedef enum { IDLE, COMPARE_TAG, ALLOCATE, WRITE_BACK  } cache_state_type;
 /*FSM state register*/
 cache_state_type state, next_state;
@@ -40,20 +39,14 @@ end
 
  always_comb begin
     /*-------------------------default values for all signals------------*/
-    /*no state change by default*/
     state       = next_state;
     v_cpu_res   = '{0, 0}; 
     tag_write   = '{0, 0, 0};
-    /*read tag by default*/
     tag_req.we  = '0;
-    /*direct map index for tag*/
     tag_req.index   = cpu_req.addr[13:4];
    
-    /*read current cache line by default*/
     data_req.we     = '0;
-    /*direct map index for cache data*/
     data_req.index  = cpu_req.addr[13:4];
-    /*modify correct word (32-bit) based on address*/
     data_write      = data_read;
     case(cpu_req.addr[3:2])
         2'b00:data_write[31:0]   = cpu_req.data;
@@ -62,7 +55,6 @@ end
         2'b11:data_write[127:96] = cpu_req.data;
     endcase
    
-    /*read out correct word(32-bit) from cache (to CPU)*/
     case(cpu_req.addr[3:2])
         2'b00:v_cpu_res.data = data_read[31:0];
         2'b01:v_cpu_res.data = data_read[63:32];
@@ -70,80 +62,52 @@ end
         2'b11:v_cpu_res.data = data_read[127:96];
     endcase
     
-    /*memory request address (sampled from CPU request)*/
     v_mem_req.addr  = cpu_req.addr;
-    /*memory request data (used in write)*/
     v_mem_req.data  = data_read;
     v_mem_req.rw    = '0;
 
 //------------------------------------Cache FSM-------------------------
     case(next_state)
-    /*IDLE state*/
         IDLE : begin
-            /*If there is a CPU request, then compare cache tag*/
             if (cpu_req.valid)
                 state = COMPARE_TAG;
         end
-            /*COMPARE_TAG state*/
         COMPARE_TAG : begin
-         /*cache hit (tag match and cache entry is valid)*/
             if (cpu_req.addr[TAGMSB:TAGLSB] == tag_read.tag && tag_read.valid) begin
                 v_cpu_res.ready = '1;
-                /*write hit*/
                 if (cpu_req.rw) begin
-                    /*read/modify cache line*/
                     tag_req.we      = '1;
                     data_req.we     = '1;
-                    /*no change in tag*/
                     tag_write.tag   = tag_read.tag;
                     tag_write.valid = '1;
-                    /*cache line is dirty*/
                     tag_write.dirty = '1;
                 end
-                /*xaction is finished*/
                 state = IDLE;
             end
-            /*cache miss*/
             else begin
-                 /*generate new tag*/
                 tag_req.we      = '1;
                 tag_write.valid = '1;
-                /*new tag*/
                 tag_write.tag   = cpu_req.addr[TAGMSB:TAGLSB];
-                /*cache line is dirty if write*/
                 tag_write.dirty = cpu_req.rw;
-                /*generate memory request on miss*/
-                v_mem_req.valid = '1;
-                /*compulsory miss or miss with clean block*/
+                v_mem_req.valid = '1;     
                 if (tag_read.valid == 1'b0 || tag_read.dirty == 1'b0)
-                 /*wait till a new block is ALLOCATEd*/
                     state = ALLOCATE;
                 else begin
-                    /*miss with dirty line*/
-                    /*write back address*/
                     v_mem_req.addr  = {tag_read.tag, cpu_req.addr[TAGLSB-1:0]};
                     v_mem_req.rw    = '1;
-                    /*wait till write is completed*/
                     state = WRITE_BACK;
                 end
             end
         end
-      /*wait for allocating a new cache line*/
         ALLOCATE: begin
-            /*memory controller has responded*/
             if (mem_data.ready) begin
-                /*re-compare tag for write miss (need modify correct word)*/
                 state       = COMPARE_TAG;
                 data_write  = mem_data.data;
-                /*update cache line data*/
                 data_req.we = '1;
             end
         end
-        /*wait for writing back dirty cache line*/
         WRITE_BACK   : begin
-        /*write back is completed*/
             if (mem_data.ready) begin
-                /*issue new memory request (allocating a new line)*/
                 v_mem_req.valid = '1;
                 v_mem_req.rw    = '0;
                 state           = ALLOCATE;
@@ -152,7 +116,6 @@ end
     endcase
 end
 
-/*connect cache tag/data memory*/
 dm_cache_data cdata (
     .clk_i       ( clk_i        ),
     .data_req    ( data_req      ),
