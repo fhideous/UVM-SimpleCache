@@ -2,7 +2,6 @@
 import cache_def::*;
 module hw_top;
 
-  // Clock and reset signals
   logic                 reset;
   logic                 clk;
   cpu_req_type          cpu_req;
@@ -23,38 +22,49 @@ module hw_top;
     .cpu_res  ( cpu_res   ) 
   );
 
+  dm_memory mem(
+    .clk_i      ( clk       ),
+    .mem_req_i  ( mem_req   ),
+    .mem_data_o ( mem_data  )
+
+  );
+  
+  logic [0:31] result [0:200];
+  
+  bit [0:31] rand_num;
   initial begin
     reset  <= 1'b1;
     clk    <= 1'b0;
     repeat(5)
       @(posedge clk);
     reset <= 1'b0;
-    $display("Reset sets by %d, time: %0t", reset, $realtime);
-    @(posedge clk);
-    
-    $display("Reset sets by %d, time: %0t", reset, $time);
-   
-    // Write data
-    for (int i=0; i < 6; i++) begin
-        cpu_req.addr    <= 32'b0110 + 16 * i;
-        cpu_req.data    <= 32'b1101 + 16 * i;
-        cpu_req.rw      <= 1'b1;
-        @(posedge clk);
-        cpu_req.valid   <= 1'b1;
-        @(posedge clk);
-        cpu_req.valid   <= 1'b0;
-        //need to set mem_data.ready to set data in 
-    end 
-    // Read data
+    cpu_req.rw      <= 1'b0;
 
+    std::randomize(rand_num);
+    cpu_req.addr    <= { 2'b11, { 16{ 1'b0 } }, 1'b1, { 9{ 1'b0 } }, 4'b0000 };
+    cpu_req.data    <= 32'b0 + 32'b1;
+    cpu_req.rw      <= 1'b1;
+    @(posedge clk);
+    cpu_req.valid   <= 1'b1;
+    @(posedge clk);
     while(~cpu_res.ready)
         @(posedge clk);
-    // $dilplay("-------------------");
-    // $display("Out is: %10d", cpu_res.data);
-    // $display("time: %0t", $time);
-    // $dilplay("-------------------");
-    #5000; $stop;
+    cpu_req.valid   <= 1'b0;
+    cpu_req.rw      <= 1'b0;
 
+    std::randomize(rand_num);
+    cpu_req.addr    <= { 2'b01, { 16{ 1'b0 } }, 1'b1, { 9{ 1'b0 } }, 4'b0000 };
+    cpu_req.data    <= 32'b0 + 32'b01;
+    cpu_req.rw      <= 1'b1;
+    @(posedge clk);
+    cpu_req.valid   <= 1'b1;
+    @(posedge clk);
+    while(~cpu_res.ready)
+        @(posedge clk);
+    cpu_req.valid   <= 1'b0;
+    cpu_req.rw      <= 1'b0;
+    
+    #100; $stop;
   end
 
 endmodule
