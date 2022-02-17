@@ -1,4 +1,4 @@
- //-uvmhome $UVMHOME
+//-uvmhome $UVMHOME
 
 // include directory for sv files
 -incdir ../rtl
@@ -6,6 +6,7 @@
 // default timescale
 -timescale 1ns/1ns
 
+-access +rwc -linedebug -gui -s -input my_waveform_here.tcl
 // options
 //+UVM_TESTNAME=base_test
 //+UVM_TESTNAME=short_packet_test 
@@ -23,6 +24,7 @@
 hw_top.sv
 
 // RTL
+../rtl/dm_memory.sv
 ../rtl/dm_cache_data.sv
 ../rtl/dm_cache_fsm.sv
 ../rtl/dm_cache_tag.sv
