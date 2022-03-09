@@ -5,10 +5,11 @@ module dm_cache_fsm(
     input bit               clk_i, 
     input bit               reset_i,
 
-    input cpu_req_type      cpu_req, //CPU request input (CPU->cache)
-    input mem_data_type     mem_data, //memory response (memory->cache)
-    output mem_req_type     mem_req, //memory request (cache->memory)
+    input  cpu_req_type     cpu_req, //CPU request input (CPU->cache)
     output cpu_result_type  cpu_res //cache result (cache->CPU)
+    
+    input  mem_data_type    mem_data, //memory response (memory->cache)
+    output mem_req_type     mem_req   //memory request (cache->memory)
  );
 
 typedef enum { IDLE, COMPARE_TAG, ALLOCATE, WRITE_BACK  } cache_state_type;
