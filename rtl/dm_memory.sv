@@ -10,7 +10,7 @@ module dm_memory(
 logic [127:0] memory[int];
 logic [31:0]  address;
 
-assign address = mem_req.addr >> 4;
+assign address = mem_req_i.addr >> 4;
 
 always_ff @( posedge clk_i ) begin
     mem_data_o.ready = 1'b0;
