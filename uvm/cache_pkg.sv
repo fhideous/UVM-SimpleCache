@@ -23,8 +23,8 @@ package cache_pkg;
     `include "mem_driver.sv"
     `include "mem_agent.sv"
 
-    `include "cache_env.sv"
     `include "cache_scoreboard.sv"
+    `include "cache_env.sv"
     `include "cache_base_test.sv"
 
 endpackage
