@@ -7,28 +7,30 @@ class cpu_sequence extends uvm_sequence #(cpu_item);
     endfunction
 
     task pre_body();
-        uvm_phase phase;
-        `ifdef UVM_VERSION_1_2
-            phase = get_starting_phase();
-        `else
-            phase = starting_phase;
-        `endif
-        if (phase != null) begin
-            phase.raise_objection(this, get_type_name());
-            `uvm_info(get_type_name(), "raise objection", UVM_MEDIUM)
+        `uvm_info(get_type_name(), "pre_body()", UVM_LOW)
+        if (starting_phase != null) begin
+            starting_phase.raise_objection(this, get_type_name());
+            `uvm_info(get_type_name(), "raise objection", UVM_LOW)
         end
     endtask : pre_body
 
+    virtual task body();
+        `uvm_info(get_type_name(), "Executing cache_3_packets sequence", UVM_LOW)
+        repeat(3) begin
+            cpu_item pkt;
+            pkt = cpu_item::type_id::create(.name("pkt"), .contxt(get_full_name()));
+            start_item(pkt);
+            assert(pkt.randomize());
+            pkt.print();
+            finish_item(pkt);
+        end      
+    endtask : body
+
     task post_body();
-        uvm_phase phase;
-        `ifdef UVM_VERSION_1_2
-            phase = get_starting_phase();
-        `else
-            phase = starting_phase;
-        `endif
-        if (phase != null) begin
-            phase.drop_objection(this, get_type_name());
-            `uvm_info(get_type_name(), "drop objection", UVM_MEDIUM)
+        `uvm_info(get_type_name(), "post_body()", UVM_LOW)
+        if (starting_phase != null) begin
+            starting_phase.drop_objection (this, get_type_name());
+            `uvm_info(get_type_name(), "drop objection", UVM_LOW)
         end
     endtask : post_body
 
@@ -38,25 +40,25 @@ endclass : cpu_sequence
 // CACHE : 3 packets
 // ------------------------------
 
-class cache_3_packets extends cpu_sequence;
+// class cache_3_packets extends cpu_sequence;
 
-  `uvm_object_utils(cache_3_packets)
+//     `uvm_object_utils(cache_3_packets)
 
-    function new(string name="cache_3_packets");
-        super.new(name);
-    endfunction
+//     function new(string name="cache_3_packets");
+//         super.new(name);
+//     endfunction
 
-  virtual task body();
-    `uvm_info(get_type_name(), "Executing cache_3_packets sequence", UVM_LOW)
-    repeat(3) begin
-        req = cpu_item::type_id::create("req");      //create the req (seq item)
-        wait_for_grant();                            //wait for grant
-        assert(req.randomize());                     //randomize the req                   
-        send_request(req);                           //send req to driver
-        wait_for_item_done();                        //wait for item done from driver
-        get_response(rsp);
-        rsp.print();
-    end      
-  endtask
+//     virtual task body();
+//         `uvm_info(get_type_name(), "Executing cache_3_packets sequence", UVM_LOW)
+//         repeat(3) begin
+//             req = cpu_item::type_id::create("req");      //create the req (seq item)
+//             wait_for_grant();                            //wait for grant
+//             assert(req.randomize());                     //randomize the req                   
+//             send_request(req);                           //send req to driver
+//             wait_for_item_done();                        //wait for item done from driver
+//             get_response(rsp);
+//             rsp.print();
+//         end      
+//   endtask
 
-endclass : cache_3_packets
+// endclass : cache_3_packets
