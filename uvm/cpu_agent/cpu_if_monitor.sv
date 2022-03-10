@@ -25,7 +25,7 @@ class cpu_if_monitor extends uvm_monitor;
     extern task run_phase( uvm_phase phase );
 
     function void start_of_simulation_phase(uvm_phase phase);
-        `uvm_info(get_type_name(), {"Start of simulation for ", get_full_name()}, UVM_HIGH)
+        `uvm_info(get_type_name(), {"Start of simulation for ", get_full_name()}, UVM_LOW)
     endfunction : start_of_simulation_phase
 
     function void report_phase(uvm_phase phase);
@@ -42,7 +42,7 @@ task cpu_if_monitor::run_phase( uvm_phase phase );
 
     @(posedge vif.rst)
     @(negedge vif.rst)
-    `uvm_info(get_type_name(), "Detected Reset Done", UVM_MEDIUM)
+    `uvm_info(get_type_name(), "Detected Reset Done", UVM_LOW)
     forever begin 
         pkt = cpu_item::type_id::create("cpu_item", this);
 

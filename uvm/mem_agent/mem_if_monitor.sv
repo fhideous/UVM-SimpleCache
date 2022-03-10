@@ -24,7 +24,7 @@ class mem_if_monitor extends uvm_monitor;
     extern task run_phase( uvm_phase phase );
 
     function void start_of_simulation_phase(uvm_phase phase);
-        `uvm_info(get_type_name(), {"Start of simulation for ", get_full_name()}, UVM_HIGH)
+        `uvm_info(get_type_name(), {"Start of simulation for ", get_full_name()}, UVM_LOW)
     endfunction : start_of_simulation_phase
 
     function void report_phase(uvm_phase phase);
@@ -41,11 +41,12 @@ task mem_if_monitor::run_phase( uvm_phase phase );
 
     @(posedge vif.rst)
     @(negedge vif.rst)
-    `uvm_info(get_type_name(), "Detected Reset Done", UVM_MEDIUM)
+    `uvm_info(get_type_name(), "Detected Reset Done", UVM_LOW)
     forever begin 
         pkt = mem_item::type_id::create("pkt", this);
 
         item_collected_port_mem.write(pkt);
         `uvm_info(get_type_name(), $sformatf("Packet Collected :\n%s", pkt.sprint()), UVM_LOW)
+        num_pkt_col++;
     end
 endtask : run_phase 
