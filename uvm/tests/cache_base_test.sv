@@ -26,7 +26,7 @@ class cache_base_test extends uvm_test;
     endfunction : build_phase
 
     virtual task run_phase(uvm_phase phase);
-        cpu_seq.start(env.env_cpu_agent.sequencer);
+        cpu_seq.start(env.cpu_agnt.sequencer);
     endtask
 
 endclass : cache_base_test
