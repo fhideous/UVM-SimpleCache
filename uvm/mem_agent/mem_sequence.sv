@@ -33,10 +33,12 @@ class mem_sequence extends uvm_sequence #(mem_item);
         super.new(name);
         mem = new("mem_model");
         mem.init();
+        `uvm_info(get_type_name(), {"mem_sequence constructor ", get_full_name()}, UVM_LOW)
     endfunction
 
     virtual task body();
         forever begin
+            `uvm_info(get_type_name(), {"mem_sequence body ", get_full_name()}, UVM_LOW)
             req = mem_item::type_id::create("mem_cache_req");
             rsp = mem_item::type_id::create("mem_cache_rsp");
             p_sequencer.mem_fifo.get(req);
