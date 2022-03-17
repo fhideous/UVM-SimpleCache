@@ -25,6 +25,10 @@ class cache_base_test extends uvm_test;
         cpu_seq = cpu_sequence::type_id::create("cpu_seq", this);
     endfunction : build_phase
 
+    virtual function void end_of_elaboration_phase(uvm_phase phase);
+        uvm_top.print_topology();
+    endfunction
+
     virtual task run_phase(uvm_phase phase);
         cpu_seq.start(env.cpu_agnt.sequencer);
     endtask
