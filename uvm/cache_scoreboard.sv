@@ -11,6 +11,7 @@ class cache_scoreboard extends uvm_scoreboard;
     // new - constructor
     function new (string name, uvm_component parent);
       super.new(name, parent);
+        `uvm_info(get_type_name(), {"cache_scorebd constructor ", get_full_name()}, UVM_LOW) 
     endfunction : new
  
     function void build_phase(uvm_phase phase);
