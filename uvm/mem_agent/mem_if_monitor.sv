@@ -12,6 +12,7 @@ class mem_if_monitor extends uvm_monitor;
 
     function new (string name, uvm_component parent);
         super.new(name, parent);
+        `uvm_info(get_type_name(), {"mem_monitor constructor ", get_full_name()}, UVM_LOW)
     endfunction : new
 
     function void build_phase( uvm_phase phase );
@@ -21,14 +22,15 @@ class mem_if_monitor extends uvm_monitor;
 
     endfunction : build_phase
 
+    extern task reset_phase( uvm_phase phase );
     extern task run_phase( uvm_phase phase );
 
     function void start_of_simulation_phase(uvm_phase phase);
-        `uvm_info(get_type_name(), {"Start of simulation for ", get_full_name()}, UVM_LOW)
+        `uvm_info(get_type_name(), {"start of simulation for ", get_full_name()}, UVM_LOW)
     endfunction : start_of_simulation_phase
 
     function void report_phase(uvm_phase phase);
-        `uvm_info(get_type_name(), $sformatf("Report: YAPP Monitor Collected %0d Packets", num_pkt_col), UVM_LOW)
+        `uvm_info(get_type_name(), $sformatf("Report: mem_if_monitor collected %0d packets", num_pkt_col), UVM_LOW)
     endfunction : report_phase
 
 endclass : mem_if_monitor
@@ -37,14 +39,16 @@ endclass : mem_if_monitor
 //Implementation
 //==============================================
 
-task mem_if_monitor::run_phase( uvm_phase phase );
-
-    @(posedge vif.rst)
-    @(negedge vif.rst)
+task mem_if_monitor::reset_phase( uvm_phase phase );
+    // @(posedge vif.rst);
+    // @(negedge vif.rst);
     `uvm_info(get_type_name(), "Detected Reset Done", UVM_LOW)
-    forever begin 
-        pkt = mem_item::type_id::create("pkt", this);
+endtask
 
+task mem_if_monitor::run_phase( uvm_phase phase );
+    forever begin
+        pkt = mem_item::type_id::create("pkt", this);
+        @(vif.monitor_cb);
         item_collected_port_mem.write(pkt);
         `uvm_info(get_type_name(), $sformatf("Packet Collected :\n%s", pkt.sprint()), UVM_LOW)
         num_pkt_col++;
