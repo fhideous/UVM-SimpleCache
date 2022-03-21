@@ -32,10 +32,12 @@ function void cpu_agent::build_phase( uvm_phase phase );
 endfunction : build_phase
 
 function void cpu_agent::connect_phase( uvm_phase phase );
-    if ( get_is_active() == UVM_ACTIVE )
+    if ( get_is_active() == UVM_ACTIVE ) begin 
         driver.seq_item_port.connect(sequencer.seq_item_export);
+        `uvm_info(get_type_name(), {"connect driver and sequencer ", get_full_name()}, UVM_LOW)
+    end 
 endfunction : connect_phase
 
 function void cpu_agent::start_of_simulation_phase(uvm_phase phase);
-    `uvm_info(get_type_name(), {"start of simulation for ", get_full_name()}, UVM_HIGH)
+    `uvm_info(get_type_name(), {"start of simulation for ", get_full_name()}, UVM_LOW)
 endfunction : start_of_simulation_phase

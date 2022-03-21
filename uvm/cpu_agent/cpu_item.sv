@@ -5,19 +5,20 @@ class cpu_item extends uvm_sequence_item;
     rand bit  [17:0]    addr_tag;
     rand bit  [9:0]     addr_index;
     rand bit  [4:0]     write_pos;    
-    bit       [31:0]    cpu_req_addr = { addr_tag, addr_index, write_pos };
+    bit       [31:0]    cpu_req_addr;
 
     rand bit  [31:0]    cpu_data;
     rand bit            cpu_rw;
     rand bit            cpu_valid;
 
-    cpu_req_type        cpu_req = '{ cpu_req_addr, cpu_data, cpu_rw, cpu_valid };
+    cpu_req_type        cpu_req;
     cpu_result_type     cpu_res;
 
     rand int            packet_delay;
 
     function new (string name = "cpu_item");
       super.new(name);
+        `uvm_info(get_type_name(), {"cpu_item constructor ", get_full_name()}, UVM_LOW)
     endfunction : new
 
     constraint packet_constr  { packet_delay >= 0; packet_delay < 20;   }
@@ -27,6 +28,8 @@ class cpu_item extends uvm_sequence_item;
     extern virtual function void display();
 
     function void post_randomize();
+        cpu_req_addr    =  { addr_tag, addr_index, write_pos };
+        cpu_req         = '{ cpu_req_addr, cpu_data, cpu_rw, cpu_valid };
     endfunction : post_randomize
 
 endclass: cpu_item
@@ -37,11 +40,12 @@ endclass: cpu_item
 
 function void cpu_item::display();
     $display(   "\n---------- PACKET ---------- "       );
-    $display(   "tag:\t %h ",          addr_tag         );
-    $display(   "index:\t %d ",        addr_index       );
-    $display(   "offset:\t %h ",       write_pos        );
-    $display(   "data:\t %h ",         cpu_data         );
-    $display(   "rw:\t %h ",           cpu_rw           );
-    $display(   "valid:\t %h ",        cpu_valid        );
+    $display(   "cpu_req:\t 0x%p",        cpu_req       );
+    $display(   "tag:\t 0x%0h",           addr_tag      );
+    $display(   "index:\t %0d ",          addr_index    );
+    $display(   "offset:\t 0x%0h ",       write_pos     );
+    $display(   "data:\t 0x%0h ",         cpu_data      );
+    $display(   "rw:\t 0b%0h ",           cpu_rw        );
+    $display(   "valid:\t 0b%0h ",        cpu_valid     );
     $display(   "------------ END ------------ \n"      );
 endfunction : display
