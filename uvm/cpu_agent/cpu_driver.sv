@@ -10,8 +10,7 @@ class cpu_driver extends uvm_driver #(cpu_item);
     endfunction : new
 
     extern task get_and_drive();
-    // extern task reset_signals();
-
+    extern task reset_phase( uvm_phase phase );
     extern task run_phase(uvm_phase phase);
 
     function void start_of_simulation_phase(uvm_phase phase);
@@ -29,11 +28,14 @@ endclass : cpu_driver
 //Implementation
 //==============================================
 
-task cpu_driver::run_phase(uvm_phase phase);
+task cpu_driver::reset_phase( uvm_phase phase );
     `uvm_info(get_type_name(), " Wait for reset", UVM_LOW)
-    // @(posedge vif.rst);
-    // @(negedge vif.rst);
+    @(posedge vif.rst);
+    @(negedge vif.rst);
     `uvm_info(get_type_name(), " Reset dropped", UVM_LOW)
+endtask
+
+task cpu_driver::run_phase(uvm_phase phase);
     forever begin
         seq_item_port.get_next_item(req);
         get_and_drive();
@@ -48,9 +50,5 @@ task cpu_driver::get_and_drive();
     `uvm_info(get_type_name(), "=============================================================================\t", UVM_LOW)
 
     vif.set_master_cpu_req(req.cpu_req);
-
-    $display("Data from request: %p", req.cpu_req);
-    $display("Data from interface:%p", vif.cpu_req);
-
 endtask : get_and_drive
 

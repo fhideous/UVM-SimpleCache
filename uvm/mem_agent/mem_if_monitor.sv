@@ -40,15 +40,18 @@ endclass : mem_if_monitor
 //==============================================
 
 task mem_if_monitor::reset_phase( uvm_phase phase );
-    // @(posedge vif.rst);
-    // @(negedge vif.rst);
-    `uvm_info(get_type_name(), "Detected Reset Done", UVM_LOW)
+    `uvm_info(get_type_name(), " Wait for reset", UVM_LOW)
+    @(posedge vif.rst);
+    @(negedge vif.rst);
+    `uvm_info(get_type_name(), " Reset dropped", UVM_LOW)
 endtask
 
 task mem_if_monitor::run_phase( uvm_phase phase );
     forever begin
         pkt = mem_item::type_id::create("pkt", this);
+        `uvm_info(get_type_name(), "Wait for monitor_cb", UVM_LOW);
         @(vif.monitor_cb);
+        `uvm_info(get_type_name(), "monitor_cb was raised", UVM_LOW);
         item_collected_port_mem.write(pkt);
         `uvm_info(get_type_name(), $sformatf("Packet Collected :\n%s", pkt.sprint()), UVM_LOW)
         num_pkt_col++;

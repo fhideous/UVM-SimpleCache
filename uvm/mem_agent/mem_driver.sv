@@ -10,7 +10,7 @@ class mem_driver extends uvm_driver #(mem_item);
     endfunction : new
 
     extern task get_and_drive();
-    // extern task reset_signals();
+    extern task reset_phase( uvm_phase phase );
 
     extern task run_phase(uvm_phase phase);
 
@@ -29,10 +29,14 @@ endclass : mem_driver
 //Implementation
 //==============================================
 
+task mem_driver::reset_phase( uvm_phase phase );
+    `uvm_info(get_type_name(), " Wait for reset", UVM_LOW)
+    @(posedge vif.rst);
+    @(negedge vif.rst);
+    `uvm_info(get_type_name(), " Reset dropped", UVM_LOW)
+endtask
+
 task mem_driver::run_phase(uvm_phase phase);
-    // @(posedge vif.rst);
-    // @(negedge vif.rst);
-    `uvm_info(get_type_name(), "Reset dropped", UVM_MEDIUM)
     forever begin
         seq_item_port.get_next_item(req);
         get_and_drive();
