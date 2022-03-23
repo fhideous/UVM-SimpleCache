@@ -26,7 +26,9 @@ module cache_tb_top;
     );
 
     initial begin
+        $timeformat(-9, 0, " ns", 5);
         rst <= 1'b0;
+        #60
         @(negedge clk)
             #1 rst <= 1'b1;
         @(negedge clk)
