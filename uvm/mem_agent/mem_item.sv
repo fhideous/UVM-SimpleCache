@@ -28,12 +28,13 @@ endclass: mem_item
 //==============================================
 
 function void mem_item::display();
-    $display(   "\n---------- PACKET ---------- "       );
-    // $display(   "tag:\t %h ",          addr_tag         );
-    // $display(   "index:\t %d ",        addr_index       );
-    // $display(   "offset:\t %h ",       write_posit      );
-    // $display(   "data:\t %h ",         cpu_data         );
-    // $display(   "rw:\t %h ",           cpu_rw           );
-    // $display(   "valid:\t %h ",        cpu_valid        );
+    $display(   "---------- MEM_PACKET ---------- "   );
+    $display(   "data:\t %h ",          mem_data.data   );
+    $display(   "data_ready:\t %d ",    mem_data.ready  );
+    $display(   "---------- request ---------- "      );
+    $display(   "addr:\t %h ",       mem_req.addr       );
+    $display(   "data:\t %h ",       mem_req.data       );
+    $display(   "rw:\t %h ",         mem_req.rw         );
+    $display(   "valid:\t %h ",      mem_req.valid      );
     $display(   "------------ END ------------ \n"      );
 endfunction : display
