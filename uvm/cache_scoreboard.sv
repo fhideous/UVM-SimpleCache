@@ -22,13 +22,13 @@ class cache_scoreboard extends uvm_scoreboard;
    
     // write
     virtual function void write_cpu(cpu_item pkt);
-      $display("SCB:: cpu_pkt recived");
-      pkt.print();
+        `uvm_info(get_type_name(), "SCB:: cpu_pkt recived", UVM_LOW);
+        pkt.display();
     endfunction : write_cpu
  
     virtual function void write_mem(mem_item pkt);
-      $display("SCB:: mem_pkt recived");
-      pkt.print();
+        `uvm_info(get_type_name(), "SCB:: mem_pkt recived", UVM_LOW);
+        pkt.display();
     endfunction : write_mem
 
 endclass : cache_scoreboard
