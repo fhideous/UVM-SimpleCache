@@ -29,8 +29,11 @@ class cache_base_test extends uvm_test;
         uvm_top.print_topology();
     endfunction
 
-    virtual task run_phase(uvm_phase phase);
+    virtual task main_phase(uvm_phase phase);
+        phase.raise_objection(this);
         cpu_seq.start(env.cpu_agnt.sequencer);
+        #500ns;
+        phase.drop_objection(this);
     endtask
 
 endclass : cache_base_test
