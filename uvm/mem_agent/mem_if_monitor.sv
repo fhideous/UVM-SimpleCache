@@ -23,7 +23,7 @@ class mem_if_monitor extends uvm_monitor;
     endfunction : build_phase
 
     extern task reset_phase( uvm_phase phase );
-    extern task run_phase( uvm_phase phase );
+    extern task main_phase( uvm_phase phase );
 
     function void start_of_simulation_phase(uvm_phase phase);
         `uvm_info(get_type_name(), {"start of simulation for ", get_full_name()}, UVM_LOW)
@@ -40,13 +40,15 @@ endclass : mem_if_monitor
 //==============================================
 
 task mem_if_monitor::reset_phase( uvm_phase phase );
+    phase.raise_objection(this);
     `uvm_info(get_type_name(), " Wait for reset", UVM_LOW)
     @(posedge vif.rst);
     @(negedge vif.rst);
     `uvm_info(get_type_name(), " Reset dropped", UVM_LOW)
+    phase.drop_objection(this);
 endtask
 
-task mem_if_monitor::run_phase( uvm_phase phase );
+task mem_if_monitor::main_phase( uvm_phase phase );
     forever begin
         pkt = mem_item::type_id::create("pkt", this);
         `uvm_info(get_type_name(), "Wait for monitor_cb", UVM_LOW);
@@ -56,4 +58,4 @@ task mem_if_monitor::run_phase( uvm_phase phase );
         `uvm_info(get_type_name(), $sformatf("Packet Collected :\n%s", pkt.sprint()), UVM_LOW)
         num_pkt_col++;
     end
-endtask : run_phase 
+endtask : main_phase 

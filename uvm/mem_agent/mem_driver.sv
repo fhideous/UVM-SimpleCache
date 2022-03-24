@@ -12,7 +12,7 @@ class mem_driver extends uvm_driver #(mem_item);
     extern task get_and_drive();
     extern task reset_phase( uvm_phase phase );
 
-    extern task run_phase(uvm_phase phase);
+    extern task main_phase(uvm_phase phase);
 
     function void start_of_simulation_phase(uvm_phase phase);
         `uvm_info(get_type_name(), {"start of simulation for ", get_full_name()}, UVM_LOW)
@@ -30,19 +30,22 @@ endclass : mem_driver
 //==============================================
 
 task mem_driver::reset_phase( uvm_phase phase );
+    phase.raise_objection(this);
     `uvm_info(get_type_name(), " Wait for reset", UVM_LOW)
     @(posedge vif.rst);
+    `uvm_info(get_type_name(), "LOL", UVM_LOW)
     @(negedge vif.rst);
     `uvm_info(get_type_name(), " Reset dropped", UVM_LOW)
+    phase.drop_objection(this);
 endtask
 
-task mem_driver::run_phase(uvm_phase phase);
+task mem_driver::main_phase(uvm_phase phase);
     forever begin
         seq_item_port.get_next_item(req);
         get_and_drive();
         seq_item_port.item_done();
     end
-endtask : run_phase
+endtask : main_phase
 
 task mem_driver::get_and_drive();
     `uvm_info(get_type_name(), $sformatf("Sending Packet :\n%s", req.sprint()), UVM_LOW)
