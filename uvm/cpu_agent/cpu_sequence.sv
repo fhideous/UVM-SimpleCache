@@ -9,14 +9,14 @@ class cpu_sequence extends uvm_sequence #(cpu_item);
     task pre_body();
         `uvm_info(get_type_name(), "pre_body", UVM_LOW)
         if (starting_phase != null) begin
-            starting_phase.raise_objection(this, get_type_name());
+            // starting_phase.raise_objection(this, get_type_name());
             `uvm_info(get_type_name(), "raise objection", UVM_LOW)
         end
     endtask : pre_body
 
     virtual task body();
         `uvm_info(get_type_name(), "body", UVM_LOW)
-        repeat(2) begin
+        repeat(1) begin
             cpu_item pkt;
             pkt = cpu_item::type_id::create(.name("pkt"), .contxt(get_full_name()));
             // pkt = new("pkt");
@@ -31,7 +31,7 @@ class cpu_sequence extends uvm_sequence #(cpu_item);
     task post_body();
         `uvm_info(get_type_name(), "cpu_sequence post_body", UVM_LOW)
         if (starting_phase != null) begin
-            starting_phase.drop_objection (this, get_type_name());
+            // starting_phase.drop_objection (this, get_type_name());
             `uvm_info(get_type_name(), "drop objection", UVM_LOW)
         end
 
