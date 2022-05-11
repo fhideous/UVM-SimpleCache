@@ -7,7 +7,7 @@ class cpu_sequence extends uvm_sequence #(cpu_item);
     endfunction
 
     task pre_body();
-        `uvm_info(get_type_name(), "pre_body()", UVM_LOW)
+        `uvm_info(get_type_name(), "pre_body", UVM_LOW)
         if (starting_phase != null) begin
             starting_phase.raise_objection(this, get_type_name());
             `uvm_info(get_type_name(), "raise objection", UVM_LOW)
@@ -15,23 +15,26 @@ class cpu_sequence extends uvm_sequence #(cpu_item);
     endtask : pre_body
 
     virtual task body();
-        `uvm_info(get_type_name(), "Executing cache_3_packets sequence", UVM_LOW)
-        repeat(3) begin
+        `uvm_info(get_type_name(), "body", UVM_LOW)
+        repeat(2) begin
             cpu_item pkt;
             pkt = cpu_item::type_id::create(.name("pkt"), .contxt(get_full_name()));
+            // pkt = new("pkt");
             start_item(pkt);
             assert(pkt.randomize());
-            pkt.print();
+            `uvm_info(get_type_name(), "Display item: ", UVM_LOW)
+            pkt.display();
             finish_item(pkt);
         end      
     endtask : body
 
     task post_body();
-        `uvm_info(get_type_name(), "post_body()", UVM_LOW)
+        `uvm_info(get_type_name(), "cpu_sequence post_body", UVM_LOW)
         if (starting_phase != null) begin
             starting_phase.drop_objection (this, get_type_name());
             `uvm_info(get_type_name(), "drop objection", UVM_LOW)
         end
+
     endtask : post_body
 
 endclass : cpu_sequence

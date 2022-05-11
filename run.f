@@ -9,7 +9,7 @@
 // default timescale
 -timescale 1ns/1ns
 
-//-access +rwc -linedebug -gui -s -input my_waveform_here.tcl
+//-access +rwc -linedebug -gui -s //-input my_waveform_here.tcl
 
 // UVM options
 //+UVM_TESTNAME=base_test

@@ -9,6 +9,7 @@ class mem_item extends uvm_sequence_item;
 
     function new (string name = "mem_item");
       super.new(name);
+        `uvm_info(get_type_name(), {"mem_item constructor ", get_full_name()}, UVM_LOW)
     endfunction : new
 
     constraint packet_constr { packet_delay >= 0; packet_delay < 20;   }
